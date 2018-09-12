@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 -------------------------------------------------
-   File Name：     file_util
-   Description :
-   Author :       bowenxu
-   date：          27/8/18
+   File Name：		file_util
+   Description :	
+   Author :			bowenxu
+   Create date：		12/9/18
+   Update date:		12/9/18
 -------------------------------------------------
 """
 import os
-
 
 def read_file_to_string(fpath):
     try:
