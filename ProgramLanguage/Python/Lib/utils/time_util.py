@@ -22,3 +22,11 @@ def fun():
 	This is an example to use @ to record start and end time for a specific function
 	'''
 	# do something here
+
+
+
+
+
+def get_current_time():
+    import time
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
