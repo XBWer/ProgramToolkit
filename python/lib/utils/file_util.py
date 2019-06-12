@@ -8,29 +8,33 @@
    Update date:		12/9/18
 -------------------------------------------------
 """
-import os
 
-def read_file_to_string(fpath):
+import os
+from subprocess import call
+import shutil
+
+
+def read_file_to_string(file_path):
     try:
-        if not os.path.exists(fpath):
-            Exception("The file %s not exist!" % fpath)
-        with open(fpath, 'rb') as myfile:
+        if not os.path.exists(file_path):
+            Exception("The file %s not exist!" % file_path)
+        with open(file_path, 'rb') as myfile:
             fstr = myfile.read()
         return str(fstr.decode("utf-8"))
     except Exception as e:
-        print('Read failed %s!' % fpath)
+        print('Read failed %s!' % file_path)
         print("Error: %s" % str(e))
         return None
 
 
-def read_kth_line_of_file(fpath, k):
+def read_kth_line_of_file(file_path, k):
     '''
     read kth line from a file, k start from 0
-    :param fpath:
+    :param file_path:
     :param k:
     :return:
     '''
-    with open(fpath) as fp:
+    with open(file_path) as fp:
         for i, line in enumerate(fp):
             if i == k:
                 return str(line).strip()
@@ -50,8 +54,8 @@ def write_file(file_path, obj):
     file_object.close()
 
 
-def insert_str_at_end(fpath, str):
-    my_open = open(fpath, 'a')
+def insert_str_at_end(file_path, str):
+    my_open = open(file_path, 'a')
     my_open.write(str)
     my_open.close()
 
@@ -62,10 +66,6 @@ def clean_dir(dir_path):
         import shutil
         shutil.rmtree(dir_path)
     os.mkdir(dir_path)
-
-import os
-from subprocess import call
-import shutil
 
 
 def get_par_path(path):
@@ -135,20 +135,12 @@ def move_files(src, dst):
     shutil.move(src, dst)
 
 
-def write_file(file_path, write_str):
-    file_object = open(file_path, 'w')
-    file_object.write(write_str.encode('utf-8').strip())
-    file_object.close()
-
-
 def remove_file(file_path):
     import shutil
     shutil.rmtree(file_path)
 
 
-def clear_folder(folder_path):
-    for item in os.listdir(folder_path):
-        itemsrc = os.path.join(folder_path, item)
+def clear_folder(dir_path):
+    for item in os.listdir(dir_path):
+        itemsrc = os.path.join(dir_path, item)
         shutil.rmtree(itemsrc)
-
-
