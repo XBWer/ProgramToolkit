@@ -1,5 +1,5 @@
 import subprocess
-from src.utils.diff_util import diff_parser_from_str
+from ProgramToolkit.python.lib.utils.diff_util import diff_parser_from_str
 
 
 def git_clone(project_url, folder_path):
@@ -67,6 +67,26 @@ def get_modified_file_list(diff_str):
         target_file = str(d.target_file)
         modified_sol_list.append(source_file)
     return modified_sol_list
+
+
+def get_parent_commit(cur_commit, work_dir):
+    """
+    Untested
+    :param commit:
+    :param work_dir:
+    :return:
+    """
+    cmd = "git log --pretty=%%P -n 1 \"%s\"" % cur_commit
+    try:
+        par_commit = subprocess.check_output(cmd, shell=True, cwd=work_dir)
+    except Exception as e:
+        print("get_parent_commit failed! cwd=%s" % work_dir)
+        print(e)
+        return None
+    par_commit = par_commit.decode("utf-8").strip()
+    if len(par_commit) == 0:
+        return None
+    return par_commit.split(' ')
 
 
 if __name__ == '__main__':

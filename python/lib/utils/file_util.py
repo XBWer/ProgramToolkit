@@ -43,8 +43,7 @@ def read_kth_line_of_file(file_path, k):
 def write_file(file_path, obj):
     write_str = ''
     if type(obj) == list:
-        for tmp in obj:
-            write_str += (str(tmp) + '\n')
+        write_str = ('\n'.join(obj))
     elif type(obj) == str:
         write_str = obj
     else:
