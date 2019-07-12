@@ -111,9 +111,17 @@ def get_changed_file_list_from_com(com, work_dir):
     return flist
 
 
-def git_checkout(folder_path, commit_sha):
-    args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'checkout', commit_sha]
-    return subprocess.check_call(['git'] + list(args))
+def git_checkout(folder_path, commit_sha=None):
+    if commit_sha is None:
+        args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'checkout', 'master']
+    else:
+        args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'checkout', commit_sha]
+    try:
+        subprocess.check_call(['git'] + list(args))
+    except Exception as e:
+        print("Checkout failed! {} {} {}".format(e, folder_path, commit_sha))
+        return False
+    return True
 
 
 def git_diff(folder_path, parent_com, cur_com):
