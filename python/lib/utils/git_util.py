@@ -118,9 +118,20 @@ def git_checkout(folder_path, commit_sha=None):
         args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'checkout', commit_sha]
     try:
         subprocess.check_call(['git'] + list(args))
-    except Exception as e:
-        print("Checkout failed! {} {} {}".format(e, folder_path, commit_sha))
-        return False
+    except Exception as e1:
+        # To address: Please, commit your changes or stash them before you can merge.
+        try:
+            clean_args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'clean', '-d', '-fx', '.']
+            subprocess.check_call(['git'] + list(clean_args))
+            reset_args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'reset', '--hard']
+            subprocess.check_call(['git'] + list(reset_args))
+            # pull_args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'pull']
+            # subprocess.check_call(['git'] + list(pull_args))
+            subprocess.check_call(['git'] + list(args))
+        except Exception as e2:
+            print("Checkout failed! {} {} {}".format(e2, folder_path, commit_sha))
+            return False
+        return True
     return True
 
 

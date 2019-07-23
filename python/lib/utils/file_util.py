@@ -111,7 +111,7 @@ def read_file_str(file_path):
 def read_file_into_line_list(file_path):
     with open(file_path) as f:
         content = f.readlines()
-    content = [x.strip() for x in content]
+    content = [x for x in content]
     return content
 
 
@@ -135,11 +135,30 @@ def move_files(src, dst):
 
 
 def remove_file(file_path):
-    import shutil
-    shutil.rmtree(file_path)
+    os.remove(file_path)
 
 
 def clear_folder(dir_path):
     for item in os.listdir(dir_path):
         itemsrc = os.path.join(dir_path, item)
         shutil.rmtree(itemsrc)
+
+
+def copy_file(fpath, dst):
+    from shutil import copyfile
+    try:
+        copyfile(fpath, dst)
+    except Exception as e:
+        import subprocess
+        cmd = "cp -f {} {}".format(fpath, dst)
+        subprocess.call(cmd, shell=True)
+
+
+def remove_dir(dir_path):
+    import shutil
+    try:
+        shutil.rmtree(dir_path)
+    except Exception as e:
+        import subprocess
+        cmd = "rm -rf {}".format(dir_path)
+        subprocess.call(cmd, shell=True)
