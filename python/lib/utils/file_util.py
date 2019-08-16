@@ -14,19 +14,6 @@ from subprocess import call
 import shutil
 
 
-def read_file_to_string(file_path):
-    try:
-        if not os.path.exists(file_path):
-            Exception("The file %s not exist!" % file_path)
-        with open(file_path, 'rb') as myfile:
-            fstr = myfile.read()
-        return str(fstr.decode("utf-8"))
-    except Exception as e:
-        print('Read failed %s!' % file_path)
-        print("Error: %s" % str(e))
-        return None
-
-
 def read_kth_line_of_file(file_path, k):
     '''
     read kth line from a file, k start from 0
@@ -102,16 +89,19 @@ def write_list2file(file_path, w_list):
             f.write(str(item) + "\n")
 
 
-def read_file_str(file_path):
+def read_file_to_str(file_path):
     with open(file_path, 'r') as myfile:
         data = myfile.read()
     return data
 
 
-def read_file_into_line_list(file_path):
+def read_file_into_line_list(file_path, if_strip=False):
     with open(file_path) as f:
         content = f.readlines()
-    content = [x for x in content]
+    if if_strip:
+        content = [x.strip() for x in content]
+    else:
+        content = [x for x in content]
     return content
 
 
