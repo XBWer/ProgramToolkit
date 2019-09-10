@@ -144,6 +144,15 @@ def copy_file(fpath, dst):
         subprocess.call(cmd, shell=True)
 
 
+def create_dir(dir_path, remove_if_exist):
+    if os.path.exists(dir_path) and not remove_if_exist:
+        print("{} exists!".format(dir_path))
+        exit(0)
+    if os.path.exists(dir_path) and remove_if_exist:
+        remove_dir(dir_path)
+    os.makedirs(dir_path, mode=0o777)
+
+
 def remove_dir(dir_path):
     import shutil
     try:
