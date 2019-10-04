@@ -61,7 +61,7 @@ def get_par_path(path):
 
 def cp_dir(source, target):
     if not os.path.exists(target):
-        os.mkdir(target)
+        os.makedirs(target)
     call(['cp', '-r', source, target])
 
 
