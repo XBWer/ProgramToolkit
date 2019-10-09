@@ -96,6 +96,9 @@ def read_file_to_str(file_path):
 
 
 def read_file_into_line_list(file_path, if_strip=False):
+    if not os.path.exists(file_path):
+        print("File {} not exists!".format(file_path))
+        return None
     with open(file_path) as f:
         content = f.readlines()
     if if_strip:
