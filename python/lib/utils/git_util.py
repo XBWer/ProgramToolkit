@@ -81,6 +81,17 @@ def get_commit_time(work_dir, com=None):
     return com_time
 
 
+def git_show(work_dir, com, rel_fpath):
+    cmd = "git show {}:{}".format(com, rel_fpath)
+    try:
+        fstr = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip()
+    except Exception as e:
+        print("git_show failed! cwd=%s" % work_dir)
+        print(e)
+        return None
+    return fstr
+
+
 def parse_time(time_str):
     """
     example 2017-12-14 21:58:44 +0800
