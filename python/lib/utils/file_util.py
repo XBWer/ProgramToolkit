@@ -74,6 +74,9 @@ def cp_file(source, target):
 
 
 def write_str2file(file_path, w_str):
+    fdir=os.sep.join(file_path.split(os.sep)[0:-1])
+    if not os.path.exists(fdir):
+        os.makedirs(fdir)
     with open(file_path, 'w') as the_file:
         the_file.write(str(w_str))
 
