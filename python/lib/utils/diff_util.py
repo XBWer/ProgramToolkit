@@ -45,19 +45,23 @@ def diff_parser_from_str(diff_str):
     return patches
 
 
-def get_modified_contract_linenums_from_diff(diff_file_path):
-    patches = diff_parser_from_file(diff_file_path)
-    p = patches[0]
-    modified_file = str(p.source_file).split('/contracts/')[-1]
-    modified_line_list = []
-    for hunk in p:
-        for line in hunk:
-            # if source
-            if str(line.line_type) == '-':
-                # if comment
-                if str(line.value).strip().startswith('//') or str(line.value).strip().startswith('/*') \
-                        or str(line.value).strip().endswith('*/') or str(line.value).strip().startswith('*') \
-                        or str(line.value).strip() == '':
-                    continue
-                modified_line_list.append(line.source_line_no)
-    return modified_file, modified_line_list
+def get_modified_files_from_diff(diff_fpath):
+    patches = diff_parser_from_file(diff_fpath)
+    return patches.modified_files
+
+# def get_modified_contract_linenums_from_diff(diff_file_path):
+#     patches = diff_parser_from_file(diff_file_path)
+#     p = patches[0]
+#     modified_file = str(p.source_file).split('/contracts/')[-1]
+#     modified_line_list = []
+#     for hunk in p:
+#         for line in hunk:
+#             # if source
+#             if str(line.line_type) == '-':
+#                 # if comment
+#                 if str(line.value).strip().startswith('//') or str(line.value).strip().startswith('/*') \
+#                         or str(line.value).strip().endswith('*/') or str(line.value).strip().startswith('*') \
+#                         or str(line.value).strip() == '':
+#                     continue
+#                 modified_line_list.append(line.source_line_no)
+#     return modified_file, modified_line_list

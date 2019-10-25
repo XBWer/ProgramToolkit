@@ -86,7 +86,7 @@ def git_show(work_dir, com, rel_fpath):
     try:
         fstr = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip()
     except Exception as e:
-        print("git_show failed! cwd=%s" % work_dir)
+        # print("git_show failed! cwd=%s" % work_dir)
         print(e)
         return None
     return fstr
@@ -182,7 +182,7 @@ def get_parent_commit(com, git_repo_dir):
         return None
     if len(par_commit) == 0:
         return None
-    return par_commit.split(' ')
+    return par_commit.split(' ')[0]
 
 
 def parse_diff_str(diff_str):

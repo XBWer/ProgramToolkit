@@ -59,10 +59,15 @@ def get_par_path(path):
     return os.path.abspath(os.path.join(path, os.pardir))
 
 
-def cp_dir(source, target):
-    if not os.path.exists(target):
-        os.makedirs(target)
-    call(['cp', '-r', source, target])
+def cp_dir(src_dir, dst_dir, new_dir_name=None):
+    if not os.path.exists(dst_dir):
+        os.makedirs(dst_dir)
+    call(['cp', '-r', src_dir, dst_dir])
+    if new_dir_name is not None:
+        src_dir_name = src_dir.split(os.sep)[-1]
+        dst_dir = os.path.join(dst_dir, src_dir_name)
+        new_dir = os.path.join(dst_dir, new_dir_name)
+        os.rename(dst_dir, new_dir)
 
 
 def delete_dir(source):
@@ -73,8 +78,8 @@ def cp_file(source, target):
     call(['cp', source, target])
 
 
-def write_str2file(file_path, w_str):
-    fdir=os.sep.join(file_path.split(os.sep)[0:-1])
+def write_str2file(w_str, file_path):
+    fdir = os.sep.join(file_path.split(os.sep)[0:-1])
     if not os.path.exists(fdir):
         os.makedirs(fdir)
     with open(file_path, 'w') as the_file:
@@ -87,6 +92,8 @@ def write_byte2file(file_path, w_byte):
 
 
 def write_list2file(file_path, w_list):
+    if os.path.exists(file_path):
+        os.remove(file_path)
     with open(file_path, "a+") as f:
         for item in w_list:
             f.write(str(item) + "\n")
