@@ -1,15 +1,32 @@
 import subprocess
 from ProgrammingToolkit.python.lib.utils.diff_util import diff_parser_from_str
 from unidiff import PatchSet
+import logging
 
 
-def git_clone(project_url, folder_path):
-    args = ['clone', project_url, folder_path]
+# def git_clone(project_url, folder_path):
+#     args = ['clone', project_url, folder_path]
+#     try:
+#         subprocess.check_call(['git'] + list(args))
+#     except Exception as e:
+#         print("git clone failed! url=%s" % project_url)
+#         print(e)
+#         return False
+#     return True
+
+
+def git_clone(usr_name, repo_name, folder_path):
+    from ProgrammingToolkit.python.lib.utils.html_util import get_html
+    project__url = 'https://github.com/{}/{}'.format(usr_name, repo_name)
+    if 'This is not the web page you are looking for' in get_html(project__url):
+        logging.warning("Repo {} not exists!".format(project__url))
+        return False
+    project_git_url = 'https://github.com/{}/{}.git'.format(usr_name, repo_name)
+    args = ['clone', project_git_url, folder_path]
     try:
         subprocess.check_call(['git'] + list(args))
     except Exception as e:
-        print("git clone failed! url=%s" % project_url)
-        print(e)
+        logging.error("git clone failed! args={}\nerror:{}".format(args, e))
         return False
     return True
 
@@ -20,8 +37,7 @@ def git_log(work_dir):
     try:
         subprocess.call(cmd, shell=True, cwd=work_dir)
     except Exception as e:
-        print("git log failed! cwd=%s" % work_dir)
-        print(e)
+        logging.error("git log failed! cmd={}\nerror:{}".format(cmd, e))
         return False
     log_fpath = os.path.join(work_dir, 'git.log')
     return log_fpath
@@ -38,8 +54,7 @@ def get_com_msg(com, git_repo_dir):
     try:
         com_msg = subprocess.check_output(cmd, shell=True, cwd=git_repo_dir).decode("utf-8").strip()
     except Exception as e:
-        print("get_parent_commit failed! cwd=%s" % git_repo_dir)
-        print(e)
+        logging.error("get_com_msg failed! cmd={}\nerror:{}".format(cmd, e))
         return None
     return com_msg
 
@@ -55,9 +70,26 @@ def get_all_commits(work_dir):
     try:
         commits = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip().split('\n')
     except Exception as e:
-        print("get_all_commits failed! cwd=%s" % work_dir)
-        print(e)
+        logging.error("get_all_commits failed! cmd={}\nerror:{}".format(cmd, e))
         return None
+    return commits
+
+
+def get_coms_by_substring_in_msg(work_dir, substr):
+    """
+    Untested
+    :param commit:
+    :param work_dir:
+    :return:
+    """
+    cmd = "git log --pretty=format:\"%H\" --grep='{}'".format(substr)
+    try:
+        commits = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip().split('\n')
+    except Exception as e:
+        logging.error("get_coms_by_substring_in_msg failed! cmd={}\nerror:{}".format(cmd, e))
+        return None
+    if commits == ['']:
+        return []
     return commits
 
 
@@ -75,8 +107,7 @@ def get_commit_time(work_dir, com=None):
     try:
         com_time = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip().split('\n')
     except Exception as e:
-        print("get_all_commits failed! cwd=%s" % work_dir)
-        print(e)
+        logging.error("get_commit_time failed! cmd={}\nerror:{}".format(cmd, e))
         return None
     return com_time
 
@@ -86,10 +117,12 @@ def git_show(work_dir, com, rel_fpath):
     try:
         fstr = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip()
     except Exception as e:
-        # print("git_show failed! cwd=%s" % work_dir)
-        print(e)
+        logging.error("git_show failed! cmd={}\nerror:{}".format(cmd, e))
         return None
     return fstr
+
+
+'/data/bowen/data/Transformation4J/FBMining/repo/'
 
 
 def parse_time(time_str):
@@ -107,7 +140,6 @@ def parse_time(time_str):
 
 def get_changed_file_list_from_com(com, work_dir):
     """
-
     :param com:
     :param work_dir:
     :return:
@@ -116,9 +148,24 @@ def get_changed_file_list_from_com(com, work_dir):
     try:
         flist = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip().split('\n')
     except Exception as e:
-        print("get_all_commits failed! cwd=%s" % work_dir)
-        print(e)
-        return False
+        logging.error("get_changed_file_list_from_com failed! cmd={}\nerror:{}".format(cmd, e))
+        return None
+    return flist
+
+
+def get_changed_file_list_between_two_coms(com1, com2, work_dir):
+    """
+
+    :param com:
+    :param work_dir:
+    :return:
+    """
+    cmd = "git diff --name-only {} {}".format(com1, com2)
+    try:
+        flist = subprocess.check_output(cmd, shell=True, cwd=work_dir).decode("utf-8").strip().split('\n')
+    except Exception as e:
+        logging.error("get_changed_file_list_from_com failed! cmd={}\nerror:{}".format(cmd, e))
+        return None
     return flist
 
 
@@ -140,21 +187,49 @@ def git_checkout(folder_path, commit_sha=None):
             # subprocess.check_call(['git'] + list(pull_args))
             subprocess.check_call(['git'] + list(args))
         except Exception as e2:
-            print("Checkout failed! {} {} {}".format(e2, folder_path, commit_sha))
+            logging.error("git Checkout failed! cmd={}\nerror:{}".format(args, e2))
             return False
         return True
     return True
 
 
-def git_diff(folder_path, parent_com, cur_com):
+def git_diff(folder_path, parent_com, cur_com, diff_mode=None):
     '''
     :param folder_path:
     :param parent_com:
     :param cur_com:
     :return:
     '''
-    args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'diff', '--unified=0', parent_com, cur_com]
-    return subprocess.check_output(['git'] + list(args)).decode('latin-1').encode("utf-8").decode('utf-8').strip()
+    if diff_mode is not None:
+        args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'diff', diff_mode, '--unified=0',
+                parent_com, cur_com]
+    else:
+        args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'diff', '--unified=0', parent_com,
+                cur_com]
+
+    try:
+        diff = subprocess.check_output(['git'] + list(args)).decode('latin-1').encode("utf-8").decode('utf-8').strip()
+    except Exception as e:
+        logging.error("git_diff failed! cmd={}\nerror:{}".format(args, e))
+        return None
+    return diff
+
+
+def git_diff_single_file(folder_path, parent_com, buggy_rel_path, cur_com, cur_rel_path):
+    '''
+    :param folder_path:
+    :param parent_com:
+    :param cur_com:
+    :return:
+    '''
+    args = ['--git-dir', folder_path + '/.git', '--work-tree', folder_path, 'diff', '--unified=0',
+            parent_com + ':' + buggy_rel_path, cur_com + ':' + cur_rel_path]
+    try:
+        diff = subprocess.check_output(['git'] + list(args)).decode('latin-1').encode("utf-8").decode('utf-8').strip()
+    except Exception as e:
+        logging.error("git_diff failed! cmd={}\nerror:{}".format(args, e))
+        return None
+    return diff
 
 
 def get_modified_file_list_from_diff(diff_str):
@@ -177,8 +252,7 @@ def get_parent_commit(com, git_repo_dir):
     try:
         par_commit = subprocess.check_output(cmd, shell=True, cwd=git_repo_dir).decode("utf-8").strip()
     except Exception as e:
-        print("get_parent_commit failed! cwd=%s" % git_repo_dir)
-        print(e)
+        logging.error("get_parent_commit failed! cmd={}\nerror:{}".format(cmd, e))
         return None
     if len(par_commit) == 0:
         return None

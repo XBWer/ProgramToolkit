@@ -16,6 +16,17 @@ def write_row_to_csv(row, fpath):
         writer.writerow(row)
 
 
+def convert_to_dict(rows, col_name):
+    dict_tmp = dict()
+    for row in rows:
+        if row[col_name] not in dict_tmp:
+            dict_tmp[row[col_name]] = row
+        else:
+            print("column #{} not unique!".format(col_idx))
+            exit(0)
+    return dict_tmp
+
+
 def write_rows_to_csv(rows, fpath):
     for row in rows:
         write_row_to_csv(row, fpath)

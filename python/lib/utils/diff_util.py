@@ -12,6 +12,7 @@
 """
 
 from unidiff import PatchSet
+import logging
 
 
 class Diff:
@@ -30,18 +31,16 @@ def diff_parser_from_file(diff_path):
     try:
         patches = PatchSet.from_filename(diff_path, encoding='utf-8')
     except Exception as e:
-        print(e.message)
-        print('***parse failed*** Please manually fix it: %s' % diff_path.split('/')[-1])
+        logging.error("diff_parser_from_file failed! diff path {}\nerror: {}".format(diff_path, e))
     return patches
 
 
 def diff_parser_from_str(diff_str):
     patches = []
     try:
-        patches = PatchSet.from_string(diff_str, encoding='utf-8')
+        patches = PatchSet.from_string(diff_str)
     except Exception as e:
-        print(e.message)
-        print('***parse failed*** Please manually fix it: %s' % diff_str.split('/')[-1])
+        logging.error("diff_parser_from_str failed! diff str {}\nerror: {}".format(diff_str, e))
     return patches
 
 

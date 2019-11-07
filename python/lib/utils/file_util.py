@@ -65,9 +65,9 @@ def cp_dir(src_dir, dst_dir, new_dir_name=None):
     call(['cp', '-r', src_dir, dst_dir])
     if new_dir_name is not None:
         src_dir_name = src_dir.split(os.sep)[-1]
-        dst_dir = os.path.join(dst_dir, src_dir_name)
+        src_cp_dir = os.path.join(dst_dir, src_dir_name)
         new_dir = os.path.join(dst_dir, new_dir_name)
-        os.rename(dst_dir, new_dir)
+        os.rename(src_cp_dir, new_dir)
 
 
 def delete_dir(source):
